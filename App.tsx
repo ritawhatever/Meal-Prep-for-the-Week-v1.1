@@ -161,7 +161,7 @@ const App: React.FC = () => {
               />
             </div>
 
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-md px-6 z-40">
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-md px-6 z-40">
               <button
                 onClick={handleGenerate}
                 className={`
@@ -203,7 +203,7 @@ const App: React.FC = () => {
           <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
             {activeTab === 'weekly' ? (
               <div className="space-y-20 pb-24">
-                {plan.meals.map((dayPlan, idx) => (
+                {plan.meals.map((dayPlan) => (
                   <section key={dayPlan.day} className="relative">
                     <div className="flex items-center gap-6 mb-10">
                       <div className="bg-gradient-to-r from-blue-700 to-green-600 text-white px-10 py-3 rounded-3xl font-black text-2xl italic shadow-xl -rotate-1 border-2 border-white">
