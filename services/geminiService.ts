@@ -1,8 +1,6 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { WeeklyPlan } from "../types";
 
-// Always initialize the client with an options object containing the apiKey.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const recipeSchema = {
@@ -70,25 +68,26 @@ export const generateMealPlan = async (
   veggies: string[],
   carbs: string[]
 ): Promise<WeeklyPlan> => {
-  const prompt = `Act as a world-class chef and meal prep expert. Generate a Monday to Friday (Lunch and Dinner) meal plan for 2 people.
+  const prompt = `Act as the Ship's Master Chef on a global voyage for Captains Andrea and Rita. 
+  Generate an adventurous Monday to Friday (Lunch and Dinner) meal plan for 2 people.
   
   CONTEXT:
-  - User Proteins: ${proteins.join(", ")} (Strictly use these 3).
-  - User Preferred Veggies: ${veggies.length > 0 ? veggies.join(", ") : "None selected (you choose)"}.
-  - User Preferred Carbs: ${carbs.length > 0 ? carbs.join(", ") : "None selected (you choose)"}.
+  - Passengers: Andrea & Rita.
+  - Selected Provisions: ${proteins.join(", ")} (Strictly use these 3).
+  - Ship's Garden: ${veggies.length > 0 ? veggies.join(", ") : "Various global greens"}.
+  - Merchant Grains: ${carbs.length > 0 ? carbs.join(", ") : "Assorted carbs"}.
   
   CONSTRAINTS:
-  1. Supplement ingredients with additional global-appropriate choices to reach exactly 6 types of veggies and 3 types of carbs total across the entire 10-meal plan.
-  2. Each recipe MUST be distinct and unique, representing a wide variety of global cuisines (Asian, African, European, Latin, Mediterranean, etc.).
-  3. Include beginner-friendly mise en place steps.
-  4. Spices MUST include specific amounts in ml or g.
-  5. Weekend prep tasks must ensure daily active cooking is <30 minutes.
-  6. Provide a valid Google Search URL for the name of each dish in the format: https://www.google.com/search?q=[Recipe+Name+Encoded]
+  1. Use the selected 3 proteins throughout the 10 meals.
+  2. Each recipe MUST be a "culinary treasure" from a different port of call (Asian, Mediterranean, Caribbean, etc.).
+  3. Include beginner-friendly preparation steps for the Captains.
+  4. Spice measurements must be precise.
+  5. Weekend prep tasks must be designed as "Sunday Docking Tasks" so daily work is <30 mins.
+  6. Recipe names should sound like items from a Ship's Logbook or Explorers' Manual.
   
   Output a JSON object matching the provided schema.`;
 
   try {
-    // Using 'gemini-3-pro-preview' for complex reasoning, planning, and constraint fulfillment tasks.
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: { parts: [{ text: prompt }] },
@@ -126,17 +125,11 @@ export const generateMealPlan = async (
       },
     });
 
-    // Accessing the generated text using the .text property as per the latest SDK.
     const text = response.text;
-    if (!text) throw new Error("No response from AI chef.");
-
-    const data = JSON.parse(text);
-    return data as WeeklyPlan;
+    if (!text) throw new Error("No response from the ship's cook.");
+    return JSON.parse(text) as WeeklyPlan;
   } catch (error: any) {
     console.error("Gemini Generation Error:", error);
-    if (error.message?.includes('400')) {
-      throw new Error("The request was rejected by the server. Try picking different ingredient combinations.");
-    }
-    throw new Error("The chef's recipe book was messy. Please try generating again.");
+    throw new Error("The ship's logbook was damaged in a storm. Try again!");
   }
 };
