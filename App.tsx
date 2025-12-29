@@ -115,23 +115,15 @@ const App: React.FC = () => {
       return;
     }
 
-    // 2. API Key Check (Critical for Vercel debugging)
-    const apiKey = process.env.API_KEY;
-    if (!apiKey || apiKey === '') {
-      console.error('CRITICAL: API_KEY is missing from environment variables.');
-      setError('Galley Error: The Captain\'s API Key (API_KEY) is missing in Vercel settings.');
-      return;
-    }
-
-    // 3. Start Generation UI
+    // 2. Start Generation UI
     console.log('Transitioning to generating step...');
     setStep('generating');
     setError(null);
 
     try {
-      console.log('Calling Gemini API with selection:', selection);
+      console.log('Calling Gemini API...');
       const result = await generateMealPlan(selection.proteins, selection.veggies, selection.carbs);
-      console.log('Successfully received meal plan:', result);
+      console.log('Successfully received meal plan');
       setPlan(result);
       setStep('results');
     } catch (e: any) {
