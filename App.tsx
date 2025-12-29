@@ -115,11 +115,13 @@ const App: React.FC = () => {
     setStep('generating');
     setError(null);
     try {
+      console.log('Initiating voyage calculation...');
       const result = await generateMealPlan(selection.proteins, selection.veggies, selection.carbs);
       setPlan(result);
       setStep('results');
     } catch (e: any) {
-      setError(`Voyage Interrupted: ${e.message || 'Storm in the Galley'}`);
+      console.error('Generation failed:', e);
+      setError(`Voyage Interrupted: ${e.message || 'Storm in the Galley. Please check your API key and connection.'}`);
       setStep('selection');
     }
   };
@@ -151,8 +153,8 @@ const App: React.FC = () => {
             </div>
 
             {error && (
-              <div className="max-w-xl mx-auto mb-16 p-8 bg-red-50 border-l-[12px] border-red-600 text-red-950 rounded-3xl flex items-center gap-6 shadow-2xl">
-                <span className="text-4xl animate-bounce">⚓</span>
+              <div className="max-w-3xl mx-auto mb-16 p-8 bg-red-50 border-l-[12px] border-red-600 text-red-950 rounded-3xl flex items-center gap-6 shadow-2xl">
+                <span className="text-4xl animate-bounce shrink-0">⚓</span>
                 <span className="font-black italic text-lg">{error}</span>
               </div>
             )}
@@ -164,7 +166,10 @@ const App: React.FC = () => {
             </div>
 
             <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-full max-w-lg px-8 z-40">
-              <button onClick={handleGenerate} className={`w-full py-8 rounded-[45px] font-black text-3xl shadow-3xl transition-all duration-300 transform border-b-[10px] active:translate-y-3 active:border-b-0 ${selection.proteins.length === MAX_PROTEINS ? 'bg-blue-800 text-white border-blue-950 hover:-translate-y-3 shadow-blue-900/50' : 'bg-slate-300 text-slate-500 border-slate-400 cursor-not-allowed opacity-40'}`}>
+              <button 
+                onClick={handleGenerate} 
+                className={`w-full py-8 rounded-[45px] font-black text-3xl shadow-3xl transition-all duration-300 transform border-b-[10px] active:translate-y-3 active:border-b-0 ${selection.proteins.length === MAX_PROTEINS ? 'bg-blue-800 text-white border-blue-950 hover:-translate-y-3 shadow-blue-900/50' : 'bg-slate-300 text-slate-500 border-slate-400 cursor-not-allowed opacity-40'}`}
+              >
                 {selection.proteins.length === MAX_PROTEINS ? 'SET SAIL! ⚓' : `SELECT ${MAX_PROTEINS - selection.proteins.length} PROTEINS`}
               </button>
             </div>
@@ -176,8 +181,8 @@ const App: React.FC = () => {
             <div className="relative z-10 text-center space-y-12">
               <MusicalShipLogo className="scale-125" />
               <div className="space-y-4">
-                <h2 className="text-5xl font-black text-blue-950 italic tracking-tight uppercase">Scouting the Horizon</h2>
-                <p className="text-blue-700 font-bold uppercase tracking-[0.5em] text-xs">Captains, provisions are being processed by the galley AI!</p>
+                <h2 className="text-5xl font-black text-blue-950 italic tracking-tight uppercase animate-pulse">Scouting the Horizon</h2>
+                <p className="text-blue-700 font-bold uppercase tracking-[0.5em] text-xs">Captains, the ship's galley is drafting your logbook...</p>
               </div>
             </div>
           </div>
