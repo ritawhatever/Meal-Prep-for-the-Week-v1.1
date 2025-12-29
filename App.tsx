@@ -16,7 +16,6 @@ const CaptainBlackCat = ({ className = "" }: { className?: string }) => (
       <circle cx="60" cy="50" r="4" fill="white" />
       <circle cx="40" cy="50" r="1.5" fill="#000" />
       <circle cx="60" cy="50" r="1.5" fill="#000" />
-      {/* Captain's Hat */}
       <path fill="#1e3a8a" d="M15 35 Q50 15 85 35 L90 40 Q50 55 10 40 Z" />
       <path fill="white" d="M20 34 Q50 18 80 34 L82 38 Q50 48 18 38 Z" />
       <circle cx="50" cy="28" r="4" fill="#fbbf24" stroke="#1e3a8a" strokeWidth="1" />
@@ -35,7 +34,6 @@ const AssistantOrangeCat = ({ className = "" }: { className?: string }) => (
       <circle cx="60" cy="50" r="4" fill="white" />
       <circle cx="40" cy="50" r="1.5" fill="#000" />
       <circle cx="60" cy="50" r="1.5" fill="#000" />
-      {/* Opera Glass Accessory */}
       <g className="animate-peer origin-[40px_50px]" transform="translate(35, 45)">
         <rect x="-2" y="10" width="2" height="20" fill="#78350f" rx="1" />
         <rect x="0" y="0" width="30" height="4" fill="#d97706" rx="1" />
@@ -108,20 +106,37 @@ const App: React.FC = () => {
   };
 
   const handleGenerate = async () => {
+    console.log('--- SHIP LOG: Generation Triggered ---');
+    
+    // 1. Basic Validation
     if (selection.proteins.length < MAX_PROTEINS) {
+      console.warn('Incomplete selection');
       setError(`Captains, the crew requires ${MAX_PROTEINS} proteins for the voyage!`);
       return;
     }
+
+    // 2. API Key Check (Critical for Vercel debugging)
+    const apiKey = process.env.API_KEY;
+    if (!apiKey || apiKey === '') {
+      console.error('CRITICAL: API_KEY is missing from environment variables.');
+      setError('Galley Error: The Captain\'s API Key (API_KEY) is missing in Vercel settings.');
+      return;
+    }
+
+    // 3. Start Generation UI
+    console.log('Transitioning to generating step...');
     setStep('generating');
     setError(null);
+
     try {
-      console.log('Initiating voyage calculation...');
+      console.log('Calling Gemini API with selection:', selection);
       const result = await generateMealPlan(selection.proteins, selection.veggies, selection.carbs);
+      console.log('Successfully received meal plan:', result);
       setPlan(result);
       setStep('results');
     } catch (e: any) {
-      console.error('Generation failed:', e);
-      setError(`Voyage Interrupted: ${e.message || 'Storm in the Galley. Please check your API key and connection.'}`);
+      console.error('API VOYAGE FAILED:', e);
+      setError(`Voyage Interrupted: ${e.message || 'Storm in the Galley. Please check your Vercel logs.'}`);
       setStep('selection');
     }
   };
@@ -153,9 +168,9 @@ const App: React.FC = () => {
             </div>
 
             {error && (
-              <div className="max-w-3xl mx-auto mb-16 p-8 bg-red-50 border-l-[12px] border-red-600 text-red-950 rounded-3xl flex items-center gap-6 shadow-2xl">
+              <div className="max-w-4xl mx-auto mb-16 p-8 bg-red-50 border-l-[12px] border-red-600 text-red-950 rounded-3xl flex items-center gap-6 shadow-2xl">
                 <span className="text-4xl animate-bounce shrink-0">⚓</span>
-                <span className="font-black italic text-lg">{error}</span>
+                <span className="font-black italic text-lg leading-relaxed">{error}</span>
               </div>
             )}
 
