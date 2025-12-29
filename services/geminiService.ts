@@ -1,8 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { WeeklyPlan } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const recipeSchema = {
   type: Type.OBJECT,
   properties: {
@@ -68,30 +66,32 @@ export const generateMealPlan = async (
   veggies: string[],
   carbs: string[]
 ): Promise<WeeklyPlan> => {
-  const prompt = `Act as the Ship's Master Chef on a global voyage for Captains Andrea and Rita. 
-  Generate an adventurous Monday to Friday (Lunch and Dinner) meal plan for 2 people.
+  // Use pre-configured API key from environment
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  CONTEXT:
-  - Passengers: Andrea & Rita.
-  - Selected Provisions: ${proteins.join(", ")} (Strictly use these 3).
-  - Ship's Garden: ${veggies.length > 0 ? veggies.join(", ") : "Various global greens"}.
-  - Merchant Grains: ${carbs.length > 0 ? carbs.join(", ") : "Assorted carbs"}.
+  const systemInstruction = `Act as the Ship's Master Chef on a global voyage for Captains Andrea and Rita. 
+  You generate adventurous Monday to Friday (Lunch and Dinner) meal plans for 2 people.
   
   CONSTRAINTS:
-  1. Use the selected 3 proteins throughout the 10 meals.
+  1. Use strictly the selected 3 proteins throughout the 10 meals.
   2. Each recipe MUST be a "culinary treasure" from a different port of call (Asian, Mediterranean, Caribbean, etc.).
-  3. Include beginner-friendly preparation steps for the Captains.
+  3. Include beginner-friendly preparation steps.
   4. Spice measurements must be precise.
   5. Weekend prep tasks must be designed as "Sunday Docking Tasks" so daily work is <30 mins. Include an estimated prepTimeMinutes for each docking task group.
-  6. Recipe names should sound like items from a Ship's Logbook or Explorers' Manual.
+  6. Recipe names should sound like items from a Ship's Logbook or Explorers' Manual.`;
+
+  const prompt = `Selected Provisions: ${proteins.join(", ")}.
+  Ship's Garden: ${veggies.length > 0 ? veggies.join(", ") : "Various global greens"}.
+  Merchant Grains: ${carbs.length > 0 ? carbs.join(", ") : "Assorted carbs"}.
   
-  Output a JSON object matching the provided schema.`;
+  Generate the full weekly plan in JSON format.`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: { parts: [{ text: prompt }] },
       config: {
+        systemInstruction,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -127,10 +127,10 @@ export const generateMealPlan = async (
     });
 
     const text = response.text;
-    if (!text) throw new Error("No response from the ship's cook.");
+    if (!text) throw new Error("The galley is empty. No response.");
     return JSON.parse(text) as WeeklyPlan;
   } catch (error: any) {
-    console.error("Gemini Generation Error:", error);
-    throw new Error("The ship's logbook was damaged in a storm. Try again!");
+    console.error("Meal Generation Error:", error);
+    throw new Error("A storm disrupted the galley! Check your connection and try again.");
   }
 };
