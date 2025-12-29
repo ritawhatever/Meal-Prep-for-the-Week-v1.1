@@ -82,7 +82,7 @@ export const generateMealPlan = async (
   2. Each recipe MUST be a "culinary treasure" from a different port of call (Asian, Mediterranean, Caribbean, etc.).
   3. Include beginner-friendly preparation steps for the Captains.
   4. Spice measurements must be precise.
-  5. Weekend prep tasks must be designed as "Sunday Docking Tasks" so daily work is <30 mins.
+  5. Weekend prep tasks must be designed as "Sunday Docking Tasks" so daily work is <30 mins. Include an estimated prepTimeMinutes for each docking task group.
   6. Recipe names should sound like items from a Ship's Logbook or Explorers' Manual.
   
   Output a JSON object matching the provided schema.`;
@@ -114,9 +114,10 @@ export const generateMealPlan = async (
                 type: Type.OBJECT,
                 properties: {
                   title: { type: Type.STRING },
+                  prepTimeMinutes: { type: Type.NUMBER },
                   tasks: { type: Type.ARRAY, items: { type: Type.STRING } },
                 },
-                required: ["title", "tasks"],
+                required: ["title", "tasks", "prepTimeMinutes"],
               },
             },
           },

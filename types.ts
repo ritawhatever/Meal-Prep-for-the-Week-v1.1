@@ -1,4 +1,3 @@
-
 export interface Ingredient {
   name: string;
   amount: string; // e.g., "200g", "15ml"
@@ -33,6 +32,7 @@ export interface WeeklyPlan {
   meals: DayPlan[];
   weekendPrep: {
     title: string;
+    prepTimeMinutes: number;
     tasks: string[];
   }[];
 }
